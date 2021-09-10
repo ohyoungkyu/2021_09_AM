@@ -22,12 +22,30 @@ public class HomePrintDanServlet extends HttpServlet {
 			inputedDan = "1";
 		}
 		
+		String inputedlimit = request.getParameter("limit");
+		
+		if(inputedlimit == null) {
+			inputedlimit = "9";
+		}
+		
 		int dan = Integer.parseInt(inputedDan);
+		int limit = Integer.parseInt(inputedlimit);
 		
-		response.getWriter().append(String.format("%d단<br>", dan));
+		String color = request.getParameter("color");
+
+		if (color == null) {
+			color = "";
+		}
+		String bgColor = request.getParameter("bgColor");
+
+		if (bgColor == null) {
+			bgColor = "white";
+		}
 		
-		for(int i = 1; i<= 9; i++) {
-			response.getWriter().append(String.format("%d * %d = %d<br>" , dan, i, dan * i));
+		response.getWriter().append(String.format("<div style=\"color:%s; background-color:%s;\">%d단</div><br />", color,bgColor, dan));
+		
+		for(int i = 1; i<= limit; i++) {
+			response.getWriter().append(String.format("<div style=\"color:%s;background-color:%s;\">%d * %d = %d</div><br>", color,bgColor, dan, i, dan * i));
 		}
 	}
 
