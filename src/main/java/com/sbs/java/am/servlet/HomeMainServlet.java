@@ -1,4 +1,4 @@
-package com.sbs.java.am;
+package com.sbs.java.am.servlet;
 
 import java.io.IOException;
 
@@ -8,14 +8,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-// /home/printDan
-@WebServlet("/home/printDan2")
-public class HomePrintDan2Servlet extends HttpServlet {
+@WebServlet("/home/main")
+public class HomeMainServlet extends HttpServlet {
 
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
-		request.getRequestDispatcher("/jsp/home/printDan.jsp").forward(request, response);
+		request.getRequestDispatcher("/jsp/home/main.jsp").forward(request, response);
 	}
 
-} 
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		doGet(request, response);
+	}
+}

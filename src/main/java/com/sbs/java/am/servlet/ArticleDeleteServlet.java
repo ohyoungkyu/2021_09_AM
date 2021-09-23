@@ -1,10 +1,9 @@
-package com.sbs.java.am;
+package com.sbs.java.am.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -13,16 +12,20 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/article/list")
-public class ArticleListServlet extends HttpServlet {
+import com.sbs.java.am.util.DBUtil;
+import com.sbs.java.am.util.SecSql;
 
+@WebServlet("/article/doDelete")
+public class ArticleDeleteServlet extends HttpServlet {
+
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		response.setContentType("text/html; charset=UTF-8");
 
 		String url = "jdbc:mysql://localhost:3306/am?serverTimezone=Asia/Seoul&useOldAliasMetadataBehavior=true&zeroDateTimeBehavior=convertToNull";
-		String user = "sbsst";
-		String password = "sbs123414";
+		String user = "root";
+		String password = "";
 
 		// 커넥터 드라이버 활성화
 		String driverName = "com.mysql.cj.jdbc.Driver";
@@ -36,26 +39,25 @@ public class ArticleListServlet extends HttpServlet {
 		}
 
 		// DB 연결
-		Connection conn = null;
+		Connection con = null;
 
 		try {
-			conn = DriverManager.getConnection(url, user, password);
-			DBUtil dbUtil = new DBUtil(request, response);
+			con = DriverManager.getConnection(url, user, password);
+			int id = Integer.parseInt(request.getParameter("id"));
 
-			String sql = "SELECT * FROM article";
-			List<Map<String, Object>> articleRows = dbUtil.selectRows(conn, sql);
+			SecSql sql = SecSql.from("DELETE");
+			sql.append("FROM article");
+			sql.append("WHERE id = ?", id);
 
-			response.getWriter().append(articleRows.toString());
-			
-			request.setAttribute("articleRows", articleRows);
-			request.getRequestDispatcher("/jsp/home/list.jsp").forward(request, response);
-
+			DBUtil.delete(con, sql);
+			response.getWriter().append(
+					String.format("<script> alert('%d번 글이 삭제되었습니다.'); location.replace('list'); </script>", id));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			if (conn != null) {
+			if (con != null) {
 				try {
-					conn.close();
+					con.close();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -63,4 +65,9 @@ public class ArticleListServlet extends HttpServlet {
 		}
 	}
 
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		doGet(request, response);
+	}
 }
