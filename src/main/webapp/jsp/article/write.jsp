@@ -9,11 +9,10 @@
 <title>게시물 작성</title>
 </head>
 <body>
-
 	<h1>게시물 작성</h1>
 
-	<form action="doWrite" method="POST">
 
+	<form action="doWrite" method="POST">
 
 		<div>
 			제목 : <input autocomplete="off" placeholder="제목을 입력해주세요." name="title"
@@ -24,6 +23,7 @@
 			<textarea autocomplete="off" placeholder="내용을 입력해주세요." name="body" /></textarea>
 		</div>
 		<div>
+			<!-- <input type="submit" value="작성" /> -->
 			<button type="submit">작성</button>
 			<a href="list">리스트</a>
 		</div>

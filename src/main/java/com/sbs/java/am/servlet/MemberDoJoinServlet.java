@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,14 +15,14 @@ import com.sbs.java.am.Config;
 import com.sbs.java.am.util.DBUtil;
 import com.sbs.java.am.util.SecSql;
 
-@WebServlet("/article/detail")
-public class ArticleDetailServlet extends HttpServlet {
+@WebServlet("/member/doJoin")
+public class MemberDoJoinServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html; charset=UTF-8");
-
 
 
 		// 커넥터 드라이버 활성화
@@ -42,15 +41,19 @@ public class ArticleDetailServlet extends HttpServlet {
 
 		try {
 			con = DriverManager.getConnection(Config.getDBUrl(), Config.getDBId(), Config.getDBPw());
-			int id = Integer.parseInt(request.getParameter("id"));
+			String loginId = request.getParameter("loginId");
+			String loginPw = request.getParameter("loginPw");
+			String name = request.getParameter("name");
 
-			SecSql sql = SecSql.from("SELECT *");
-			sql.append("FROM article");
-			sql.append("WHERE id = ?", id);
+			SecSql sql = SecSql.from("INSERT INTO member");
+			sql.append("SET regDate = NOW()");
+			sql.append(", loginId = ?", loginId);
+			sql.append(", loginPw = ?",loginPw);
+			sql.append(", `name` = ?",name);
 
-			Map<String, Object> articleRow = DBUtil.selectRow(con, sql);
-			request.setAttribute("articleRow", articleRow);
-			request.getRequestDispatcher("/jsp/article/detail.jsp").forward(request, response);
+			int id = DBUtil.insert(con, sql);
+			response.getWriter().append(
+					String.format("<script> alert('%d번 회원이 가입되었습니다.'); location.replace('../home/main'); </script>", id));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
