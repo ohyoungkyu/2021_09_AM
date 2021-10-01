@@ -54,7 +54,7 @@
 	</script>
 
 
-	<form action="doJoin" method="POST"
+	<form action="login" method="POST"
 		onsubmit="JoinForm__submit(this); return false;">
 
 		<div>
@@ -68,11 +68,6 @@
 		<div>
 			로그인 비밀번호 확인 : <input placeholder="로그인 비밀번호 확인을 입력해주세요." 
 			name="loginPwConfirm" type="password" />
-		</div>
-		</div>
-		<div>
-			이름 : <input placeholder="이름을 입력해주세요." 
-			name="name" type="text" />
 		</div>
 		<div>
 			<!-- <input type="submit" value="작성" /> -->
