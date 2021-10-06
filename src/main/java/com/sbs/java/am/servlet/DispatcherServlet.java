@@ -14,20 +14,20 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.sbs.java.am.Config;
+import com.sbs.java.am.controller.ArticleController;
 import com.sbs.java.am.exception.SQLErrorException;
 import com.sbs.java.am.util.DBUtil;
 import com.sbs.java.am.util.SecSql;
 
-@WebServlet("/article/detail")
-public class ArticleDetailServlet extends HttpServlet {
+@WebServlet("/s/*")
+public class DispatcherServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html; charset=UTF-8");
-
-
-
+		
 		// 커넥터 드라이버 활성화
 		String driverName = Config.getDBDriverClassName();
 
@@ -45,6 +45,7 @@ public class ArticleDetailServlet extends HttpServlet {
 		try {
 			con = DriverManager.getConnection(Config.getDBUrl(), Config.getDBId(), Config.getDBPw());
 			
+			//모든 요청에 들어가기 전에 무조건 해줘야 하는 일
 			HttpSession session = request.getSession();
 
 			boolean isLogined = false;
@@ -63,16 +64,27 @@ public class ArticleDetailServlet extends HttpServlet {
 			request.setAttribute("isLogined", isLogined);
 			request.setAttribute("loginedMemberId", loginedMemberId);
 			request.setAttribute("loginedMemberRow", loginedMemberRow);
+			//모든 요청에 들어가기 전에 무조건 해줘야 하는 일
 			
-			int id = Integer.parseInt(request.getParameter("id"));
-
-			SecSql sql = SecSql.from("SELECT *");
-			sql.append("FROM article");
-			sql.append("WHERE id = ?", id);
-
-			Map<String, Object> articleRow = DBUtil.selectRow(con, sql);
-			request.setAttribute("articleRow", articleRow);
-			request.getRequestDispatcher("/jsp/article/detail.jsp").forward(request, response);
+			String requestUri = request.getRequestURI();
+			String[] requestUriBits = requestUri.split("/");
+			
+			if(requestUriBits.length < 5) {
+				response.getWriter().append("올바른 요청이 아닙니다.");
+				return;
+			}
+			
+			String controllerName = requestUriBits[3];
+			String actionMethodName = requestUriBits[4];
+			
+			if(controllerName.equals("article")) {
+				ArticleController controller = new ArticleController(request,response,con);
+				
+				if(actionMethodName.equals("list")) {
+					controller.actionList();
+				}
+			}
+	
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch(SQLErrorException e) {
