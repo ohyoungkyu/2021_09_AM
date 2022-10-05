@@ -17,7 +17,6 @@ public class ArticleService {
 		this.articleDao = new ArticleDao(con);
 	}
 
-	111222333
 	public int getItemsInAPage() {
 		return 3;
 	}
